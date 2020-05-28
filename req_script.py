@@ -8,7 +8,7 @@ Script to perform request to a server, and print what comes back.
 """
 import requests, json 
 import sys
-from request.packages.urllib3.util.retry import Retry
+from requests.packages.urllib3.util.retry import Retry
 
 # Added a retry-strat. here, which will retry our requests if the server 
 # does not respond or throws a connection error if we perform the requests 
