@@ -7,10 +7,12 @@ In this exercise you should write a function that takes in a date and
 returns a day of the week. 
 
 ---
+ ![](https://i.imgur.com/Ssfp7.gif) 
+
 Feedback Part 1: 
 
 Missing elements:
-- A statement assigning day to the value a call of the function a call of the function datetime.datetime.strptime with arguments: ,date, and the string `'%d %m %Y'`.weekday with arguments: 
+- A statement assigning day to the value a call of the method a call of the method datetime.datetime.strptime with arguments: ,date, and the string `'%d %m %Y'`.weekday with arguments: 
 - definition of the function 'findDay' using the parameters: ,date
 ---
 ## Evaluation of Code
@@ -20,9 +22,9 @@ will be in 2020 (December 31 2020)
 hint: it should be Thursday
 
 ---
+ ![](https://i.imgur.com/Ssfp7.gif) 
+
 Feedback Part 2: 
 
 Missing elements:
 - a call of the function print with arguments: a call of the function findDay with arguments: date
-
-![](https://i.imgur.com/Ssfp7.gif)
