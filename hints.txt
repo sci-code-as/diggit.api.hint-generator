@@ -1,0 +1,22 @@
+A statement assigning day to the value a call of the function a call of
+ the function datetime.datetime.strptime with arguments: ,date, and the string 
+ '%d %m %Y'.weekday with arguments:
+
+
+- A statement assigning day to the value a call of the function
+ a call of the function datetime.datetime.strptime with arguments: 
+ ,date, and the string `'%d %m %Y'`.weekday with arguments: 
+
+- you should start using the method strptime from your import datetime: try calling it like this
+datetime.strptime()
+- strptime takes a string of a date and turns it into an integer with a special formatting argument,
+try strptime("may 25,2015", '%B %d', %Y'). 
+where (%B) is the full month
+where ($d) is a two digit day like 26
+where %Y is the 4 digit year like 2020 our current year
+
+-finally use the .weekday() method to change your converted date to string into a converted
+number indicating the day of the week . for example, (2020, 6,1, 13,30 ).weekday() = 0 
+as Monday is 0
+
+-Dont forget to use the calendar module's method calenday.day_name[day] to convert your number to a string day
