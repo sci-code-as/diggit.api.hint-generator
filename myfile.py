@@ -1,12 +1,22 @@
-from datetime import datetime
+# import datetime
+# import calendar 
+  
+# def findDay(date): 
+#     day = datetime.datetime.strptime(date, '%d, %m, %Y').weekday() 
+#     return (calendar.day_name[day]) 
+  
+# # Driver program 
+
+# date = '31, 12, 2020'
+# print(findDay(date)) 
+
+import datetime 
 import calendar 
   
 def findDay(date): 
-    day = datetime.strptime(date, '%B %d, %Y').weekday() 
+    day = 2020-12-31 00:00:00
     return (calendar.day_name[day]) 
   
 # Driver program 
-date = 'July 26, 2016'
-# date = '31 12 2020'
+date = '31 12 2020'
 print(findDay(date)) 
-

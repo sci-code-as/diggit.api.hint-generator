@@ -9,10 +9,14 @@ UX STYLE HINT
 - you should start using the method strptime from your import datetime: try calling it like this
 datetime.strptime()
 - strptime takes a string of a date and turns it into an integer with a special formatting argument,
-try strptime("may 25,2015", '%B %d', %Y'). 
-where (%B) is the full month
+this let's us get our date in the correct integer format for post processing
+
+Give this a shot!
+
+datetime.datime.strptime('31 12 2020', '%d %m %Y')
+where (%m) is the month like 12
 where ($d) is a two digit day like 26
-where %Y is the 4 digit year like 2020 our current year
+where %Y is the 4 digit year like 2020 our current year!
 
 -finally use the .weekday() method to change your converted date to string into a converted
 number indicating the day of the week . for example, (2020, 6,1, 13,30 ).weekday() = 0 
