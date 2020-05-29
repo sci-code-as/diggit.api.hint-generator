@@ -1,8 +1,10 @@
+
+UNREADABLE HINT
 A statement assigning day to the value a call of the function a call of
  the function datetime.datetime.strptime with arguments: ,date, and the string 
  '%d %m %Y'.weekday with arguments:
 
-
+UX STYLE HINT
 - A statement assigning day to the value a call of the function
  a call of the function datetime.datetime.strptime with arguments: 
  ,date, and the string `'%d %m %Y'`.weekday with arguments: 
