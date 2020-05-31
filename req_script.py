@@ -16,7 +16,7 @@ from requests.packages.urllib3.util.retry import Retry
 retry_strategy = Retry(total=3, backoff_factor=1) 
 
 
-main_url = 'http://35.228.245.72:80' # home of the thing... 
+main_url = 'https://hint-service-ccoonwiv5q-lz.a.run.app' # home of the thing... 
 api_loc = '{}/Exercise'.format(main_url)
 
 connection_check = requests.post('{}/'.format(main_url)).status_code == 200
