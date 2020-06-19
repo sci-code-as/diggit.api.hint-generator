@@ -8,7 +8,7 @@ Script to perform request to a server, and print what comes back.
 """
 import requests, json 
 import sys
-from request.packages.urllib3.util.retry import Retry
+from requests.packages.urllib3.util.retry import Retry
 
 # Added a retry-strat. here, which will retry our requests if the server 
 # does not respond or throws a connection error if we perform the requests 
@@ -16,7 +16,7 @@ from request.packages.urllib3.util.retry import Retry
 retry_strategy = Retry(total=3, backoff_factor=1) 
 
 
-main_url = 'http://35.228.245.72:80' # home of the thing... 
+main_url = 'https://hint-service-ccoonwiv5q-lz.a.run.app' # home of the thing... 
 api_loc = '{}/Exercise'.format(main_url)
 
 connection_check = requests.post('{}/'.format(main_url)).status_code == 200
@@ -35,11 +35,13 @@ def get_exercise(part=0):
 
 
         
-def test_my_answer(part=0,filename='<enter-filename>.py'):
+def test_my_answer(part=0,filename=None):
     """
     Provide us with an integer indicating how far you have gotten, and we can 
     test and provide hints towards correcting any mistakes you may have made. 
     """
+    if not filename: 
+        print("Please provide your file as an argument to the execution; \n -$ python req_script test <section> your_filename")
     with open(filename) as f:
         answer = f.read()
         
@@ -74,7 +76,7 @@ def test_my_answer(part=0,filename='<enter-filename>.py'):
     
     
 def write_readme(content):
-    with open('exercise_readme.md','w') as f: 
+    with open('exercise.md','w') as f: 
         for el in content: 
             f.write(el)
     
