@@ -25,6 +25,10 @@ To get started make a directory, put the script in there and execute
 $> python3 req_script.py get 0
 ```
 The script should then pull the first (0'th) portion of the exercise for you. 
+This will create the file `exercise.md` which you can view with any markdown-viewer, 
+e.g. in VS-Code using the "preview". 
+ 
+## Getting Hints: 
 If you need a hint, or feel you've reached the solution you should run 
 ```
 $> python3 req_script.py test 0 <your_file>

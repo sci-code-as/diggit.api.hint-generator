@@ -56,7 +56,6 @@ def test_my_answer(part=0,filename=None):
             
     except SyntaxError:
         print(f'Your code has a syntax error that will not allow us to check it:\n{sys.exc_info()[1]}')
-        return 
     
     except NameError:
         print(f'Your code stopped on an error due to undefined name:\n{sys.exc_info()[1]}')
