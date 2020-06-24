@@ -41,6 +41,13 @@ There's two portions (0 and 1) to this exercise, where portion 1 is
 about writing the evaluation portion of the code. 
 
 
+# VS-Code using Preview-function (demo): 
+VSCode open in repo-directory for this demo: 
+<p align="center">
+  <img src="./.github/VS_code.gif" alt="Contribution Guide">
+</p>
+
+
 ## Other notes: 
 - currently the feedback is aiming you towards a specific way of doing this, 
 and will not be running unit-tests on you. 
