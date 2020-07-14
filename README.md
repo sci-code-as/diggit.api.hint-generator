@@ -3,24 +3,30 @@
 Welcome to the practice problem part where you will be presented two entry-level tasks in making python-program. 
 
 ## Requirements: 
-1. Loom
-2. IDE
-3. Python
-4. Commands to run the programs and to request hints 
 
+#### 1) Code editor:
+1. If you have a code editor - use the one you have.
+2. If you don’t - download & setup Visual Studio Code via: [code.visualstudio.com/download](https://code.visualstudio.com/download) 
 
-#### Loom:
-1. Download Loom application for desktop via: https://www.loom.com/desktop
+#### 2) Python 3:
+1. If you already have Python installed - Congrats! You do not need to go thought the next step. 
+2. If you don’t, please follow the following:  
 
-You'll need to have Python 3.X installed and be able to run programs from the 
-terminal/command prompt. 
+- For Mac:  [opensource.com](https://opensource.com/article/19/5/python-3-default-mac) (Navigate to “What we should do” section).
+- For Windows:  [howtogeek.com](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) (Navigate to “How to Install Python 3” section)
+
+3.You may need to install the `requests`-package to run the request script, which 
+can be done by executing `pip install requests`. ( or visit this [pypi.org/project/requests](https://pypi.org/project/requests/))
+
  
-This is tested on linux, but should work on a windows-command prompt as well. 
+#### 3) Loom:
+1. Download & setup Loom application for desktop: [loom.com/desktop](https://www.loom.com/desktop) 
+2. Test video recording with the correct the following settings:
+- No sound & no face camera
+- Select Window to be recorded 
+- Select App - Visual Studio (or the code editor that you use)
 
-You may need to install the `requests`-package to run the request script, which 
-can be done by executing `pip install requests`. ( or visit this [site](https://pypi.org/project/requests/))
-
-## Usage of `req_script` : 
+## Usage of `req_script`  (put this info when it is needed): 
 
 You'll be pulling the `req_script.py` from this repo, which is going to 
 pull and create a file called `exercise.md` for you. This file you can view in 
