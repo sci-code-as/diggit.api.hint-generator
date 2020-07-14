@@ -1,9 +1,17 @@
 # Introduction: 
 
-Welcome to this short exercise in making a python-program. 
+Welcome to the practice problem part where you will be presented two entry-level tasks in making python-program. 
 
-We'll make something pretty basic here, but it's a good exercise to try. 
 ## Requirements: 
+1. Loom
+2. IDE
+3. Python
+4. Commands to run the programs and to request hints 
+
+
+#### Loom:
+1. Download Loom application for desktop via: https://www.loom.com/desktop
+
 You'll need to have Python 3.X installed and be able to run programs from the 
 terminal/command prompt. 
  
