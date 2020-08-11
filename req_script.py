@@ -10,19 +10,25 @@ import requests, json
 import sys
 from requests.packages.urllib3.util.retry import Retry
 from functools import reduce
-import time
+from contextlib import redirect_stderr #for testing 
+import unittest
+from unittest.mock import patch
+from io import StringIO
+import importlib #for reload of imports...
+
+
 # Added a retry-strat. here, which will retry our requests if the server 
 # does not respond or throws a connection error if we perform the requests 
 # too fast. 
 retry_strategy = Retry(total=3, backoff_factor=1) 
 
 
-main_url = 'https://hint-service-ccoonwiv5q-lz.a.run.app' # home of the thing... 
+main_url = 'https://hint-service-ccoonwiv5q-lz.a.run.app' # home of the thing... local-alt:#'http://0.0.0.0:80'#
 api_loc = '{}/chosen_exercise'.format(main_url)
 
 connection_check = requests.post('{}/'.format(main_url)).status_code == 200
 
-    
+#print('connected?',connection_check)
     
 def get_exercise(name:str=''):
     """
@@ -31,8 +37,13 @@ def get_exercise(name:str=''):
     """
     params = {'name':name}
     print(f'params:{params}')
-    exercise_text = eval(requests.get(api_loc, params = params).content.decode('utf-8')) 
-    return exercise_text
+    
+    response = requests.get(api_loc, params = params).json()#('utf-8'))
+    #print('returns...',type(response),response)
+    exercise_text = response['content']
+    unit_test = response['unit_test']
+    print(exercise_text)
+    return exercise_text,unit_test
     
 def get_exercises():
     """
@@ -44,7 +55,7 @@ def get_exercises():
 
 
         
-def test_my_answer(filename=None):
+def test_my_answer(filename=None,tests = ''):
     """
     Provide us with an integer indicating how far you have gotten, and we can 
     test and provide hints towards correcting any mistakes you may have made. 
@@ -58,29 +69,62 @@ def test_my_answer(filename=None):
     params = {'name':filename,
               'answer': answer,
               'w_test':True}
-    """
+    error = False
     try:
-        if filename[-3:] == '.py':
-            exec('from %s import *'% filename[:-3])
-        else: 
-            exec('from %s import *'% filename)
+        print('\n::: Running Your Code :::\nPro-tip: if your code seems stuck in an infinite loop use ctrl+c to cancel it.\n\n' )
+        #only works once ? - can't get reload(module/function) to work elegantly
+        
+        
+        #print('::: Running unit-tests on code :::')
+        
+        
+        
+        #exec(f'{tests}') #adds the test(s)
+        #print(answer + '\n' + tests)
+        
+        try:
+            #exec(f'{tests}')
+            exec(answer + tests, locals())
+            suite = unittest.TestSuite()
             
+            suite.addTests(unittest.makeSuite(eval('Exercise_Test')))
+            #print('locals.',locals().keys())
+            #print('globals',globals().keys())
+            dummy_io = StringIO() #captures log from io so that it does not print to user.
+            with redirect_stderr(dummy_io):
+                runner = unittest.TextTestRunner(verbosity=0)
+            result = runner.run(suite)
+            
+            passed_tests = result.wasSuccessful()
+            
+        except NameError: 
+            print('Check the names...' )
+            passed_tests= False
+        except: 
+            passed_tests = False
     except SyntaxError:
-        print(f'Your code has a syntax error that will not allow us to check it:\n{sys.exc_info()[1]}')
-    
+        print(f'Your code has a syntax error that will not allow us to check it:\n{sys.exc_info()[1]}') 
+        error = True
     except NameError:
         print(f'Your code stopped on an error due to undefined name:\n{sys.exc_info()[1]}')
+        error = True
     except: 
         print(f'Your code exited with the following error message:\n{sys.exc_info()[1]}')
-     """   
+        error = True
+       
     #session start here ?
-
-    adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
-    session = requests.Session()
-    
-    response = eval(session.get(api_loc, params = params).content.decode('utf-8'))
-
-    return response
+    if passed_tests or error: 
+        params['w_test'] = False
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+        session = requests.Session()  
+        response = session.get(api_loc, params = params).json()
+        text = response['content'] + '\n\n### Your code has successfully passed all unit tests, Congratulations!' if passed_tests else ''
+    else: 
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+        session = requests.Session()  
+        response = session.get(api_loc, params = params).json()
+        text = response['content']       
+    return text
     
     
     
@@ -114,7 +158,7 @@ class REPL():
         print(self.exercises)
         # then we can set up what's current (this should be done dynamically maybe?)
         self.current = self.splash_home()
-        
+        self.test = '' # will be part of eval. 
         self.run()
         
     def run(self):
@@ -150,8 +194,7 @@ class REPL():
                 continue
             except IndexError:
                 print('Exercise Index out of range, check list of available exercises.')
-            
-    
+            self.running=False
             
             
     def splash_home(self):
@@ -186,13 +229,18 @@ class REPL():
         command_request = "Available commands:"
         _commands = [str(key) + ' - ' + val[1] for key,val in self.commands.items()]
         _com_out = reduce(lambda x,y: x + '\n' + y, _commands)
-        write_readme(get_exercise(name_))
+        
+        content, test = get_exercise(name_)
+        write_readme(content)
+        self.test = test
+        
         self.exercise_prompt = f"The exercise-text for '{name_}' has been written/updated to the 'exercise.md'- file, check your progress from there."
         return [line, f"Exercise {name_}:\nStart by creating the file '{name_}'\n", line, self.exercise_prompt, d_line, command_request, _com_out]
         
     def get_hint(self,target_file):
+        # First run the tests. 
         try: 
-            write_readme(test_my_answer(target_file))
+            write_readme(test_my_answer(target_file, self.test))
         except FileNotFoundError: 
             print(f'\nERROR:\nYou first need to create the file {target_file} to start requesting hints for this exercise')
         
@@ -225,20 +273,5 @@ if __name__ == '__main__':
     test = REPL()
     run_mode = sys.argv
     
-    i = 0
-    test_flag = 'test' in run_mode
-    get_next = 'get' in run_mode
     
-    if get_next: 
-        ind = run_mode.index('get')
-        i = int(run_mode[ind+1])
-        write_readme(get_exercise(i))
-    elif test_flag: 
-        ind = run_mode.index('test')
-        i = int(run_mode[ind+1])
-        target_file = run_mode[ind+2]
-        if 'target_file' in locals():
-            write_readme(test_my_answer(i, target_file))
-        else:
-            write_readme(test_my_answer(i,target_file))
 
