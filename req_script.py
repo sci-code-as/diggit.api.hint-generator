@@ -6,15 +6,14 @@ Request Support:
     
 Script to perform request to a server, and print what comes back. 
 """
-import requests, json 
+import requests
 import sys
 from requests.packages.urllib3.util.retry import Retry
 from functools import reduce
 from contextlib import redirect_stderr #for testing 
 import unittest
-from unittest.mock import patch
 from io import StringIO
-import importlib #for reload of imports...
+from unittest.mock import patch
 
 
 # Added a retry-strat. here, which will retry our requests if the server 
@@ -42,7 +41,7 @@ def get_exercise(name:str=''):
     #print('returns...',type(response),response)
     exercise_text = response['content']
     unit_test = response['unit_test']
-    print(exercise_text)
+    #print(exercise_text)
     return exercise_text,unit_test
     
 def get_exercises():
@@ -82,14 +81,14 @@ def test_my_answer(filename=None,tests = ''):
         #exec(f'{tests}') #adds the test(s)
         #print(answer + '\n' + tests)
         
-        try:
-            #exec(f'{tests}')
-            exec(answer + tests, locals())
+       
+        exec(answer + tests, locals())
+        print('')
+        try: 
             suite = unittest.TestSuite()
             
             suite.addTests(unittest.makeSuite(eval('Exercise_Test')))
-            #print('locals.',locals().keys())
-            #print('globals',globals().keys())
+            
             dummy_io = StringIO() #captures log from io so that it does not print to user.
             with redirect_stderr(dummy_io):
                 runner = unittest.TextTestRunner(verbosity=0)
@@ -97,13 +96,22 @@ def test_my_answer(filename=None,tests = ''):
             
             passed_tests = result.wasSuccessful()
             
+        
         except NameError: 
             print('Check the names...' )
             passed_tests= False
         except: 
+            print('something off with tests')
             passed_tests = False
     except SyntaxError:
-        print(f'Your code has a syntax error that will not allow us to check it:\n{sys.exc_info()[1]}') 
+        print(f'Your code has a syntax error that will not allow us to check it:\n') 
+        try: 
+            exec(answer)
+        except SyntaxError:
+            print(f'{sys.exc_info()[1]}')
+            err= sys.exc_info()[1]
+            print(repr(err))
+            print("\nHint on reading Error-messages; \nif you get an EOF, then it is often the thing that was before what was printed that was the source of the error. This is because the Parser tries to continue and it only realizes it's encountered an error when it tries to read the next thing (This can include the end of the file as well).")
         error = True
     except NameError:
         print(f'Your code stopped on an error due to undefined name:\n{sys.exc_info()[1]}')
@@ -155,7 +163,7 @@ class REPL():
         
         exercise_list = get_exercises()
         self.exercises = [[i,ex] for i,ex in zip(range(len(exercise_list)),exercise_list)]
-        print(self.exercises)
+        #print(self.exercises)
         # then we can set up what's current (this should be done dynamically maybe?)
         self.current = self.splash_home()
         self.test = '' # will be part of eval. 
@@ -176,10 +184,12 @@ class REPL():
                 except: 
                     pass
                 if isinstance(new_command, int): 
-                    print(f'Chosen exercise {new_command}')
+                    print(f'Entering chosen exercise `{new_command} - {self.exercises[new_command][1]}`')
                     self.current= self.exercise_splash(new_command)
-                print(f"Executing command '{self.commands[new_command][1]}'")
-                eval(f'{self.commands[new_command][0]}')
+                    continue
+                else: 
+                    print(f"Executing command '{self.commands[new_command][1]}'")
+                    eval(f'{self.commands[new_command][0]}')
                 
             except TypeError: 
                 print('some type error...')
