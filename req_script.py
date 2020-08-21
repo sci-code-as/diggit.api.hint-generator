@@ -35,7 +35,7 @@ def get_exercise(name:str=''):
     Call this function with an integer 
     """
     params = {'name':name}
-    print(f'params:{params}')
+    #print(f'params:{params}')
     
     response = requests.get(api_loc, params = params).json()#('utf-8'))
     #print('returns...',type(response),response)
@@ -71,17 +71,6 @@ def test_my_answer(filename=None,tests = ''):
     error = False
     try:
         print('\n::: Running Your Code :::\nPro-tip: if your code seems stuck in an infinite loop use ctrl+c to cancel it.\n\n' )
-        #only works once ? - can't get reload(module/function) to work elegantly
-        
-        
-        #print('::: Running unit-tests on code :::')
-        
-        
-        
-        #exec(f'{tests}') #adds the test(s)
-        #print(answer + '\n' + tests)
-        
-       
         exec(answer + tests, locals())
         print('')
         try: 
@@ -122,11 +111,11 @@ def test_my_answer(filename=None,tests = ''):
        
     #session start here ?
     if passed_tests or error: 
-        params['w_test'] = False
+        #params['w_test'] = False
         adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
         session = requests.Session()  
         response = session.get(api_loc, params = params).json()
-        text = response['content'] + '\n\n### Your code has successfully passed all unit tests, Congratulations!' if passed_tests else ''
+        text = response['content'] + '\n\n### The function you wrote has successfully passed all our unit tests, Congratulations!\nps. Please double-check whether there are any more hints above, and make sure to test-run your function on your own system to make sure it works as it should' if passed_tests else ''
     else: 
         adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
         session = requests.Session()  
@@ -165,8 +154,8 @@ class REPL():
         self.exercises = [[i,ex] for i,ex in zip(range(len(exercise_list)),exercise_list)]
         #print(self.exercises)
         # then we can set up what's current (this should be done dynamically maybe?)
-        self.current = self.splash_home()
         self.test = '' # will be part of eval. 
+        self.current = self.exercise_splash(0)#self.splash_home()
         self.run()
         
     def run(self):
@@ -234,8 +223,8 @@ class REPL():
         line = '-'*width 
         d_line = '='*width
         self.commands= {'q': ["setattr(self,'running', False)","quit CLI"],
-                        'hint': [f"self.get_hint('{name_}')","get hints."],
-                        'h': ["setattr(self,'current',self.splash_home())","return to home"]}
+                        'hint': [f"self.get_hint('{name_}')","get hints."]}
+                        #'h': ["setattr(self,'current',self.splash_home())","return to home"]}
         command_request = "Available commands:"
         _commands = [str(key) + ' - ' + val[1] for key,val in self.commands.items()]
         _com_out = reduce(lambda x,y: x + '\n' + y, _commands)
