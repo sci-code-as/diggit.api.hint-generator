@@ -69,6 +69,7 @@ def test_my_answer(filename=None,tests = ''):
               'answer': answer,
               'w_test':True}
     error = False
+    unittest_hints = [] # worst case this now is an empty list
     try:
         print('\n::: Running Your Code :::\nPro-tip: if your code seems stuck in an infinite loop use ctrl+c to cancel it.\n\n' )
         exec(answer + tests, locals())
@@ -84,8 +85,10 @@ def test_my_answer(filename=None,tests = ''):
             result = runner.run(suite)
             
             passed_tests = result.wasSuccessful()
+            failures = result.failures
             
-        
+            unittest_hints = [failure_log[1].split('{')[1] for failure_log in failures]
+            
         except NameError: 
             print('Check the names...' )
             passed_tests= False
@@ -111,16 +114,18 @@ def test_my_answer(filename=None,tests = ''):
        
     #session start here ?
     if passed_tests or error: 
-        #params['w_test'] = False
+        params['w_test'] = False
         adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
         session = requests.Session()  
         response = session.get(api_loc, params = params).json()
-        text = response['content'] + '\n\n### The function you wrote has successfully passed all our unit tests, Congratulations!\nps. Please double-check whether there are any more hints above, and make sure to test-run your function on your own system to make sure it works as it should' if passed_tests else ''
+        unit_test_feedback = reduce(lambda x,y: f'{x}\n{y}', unittest_hints,'## Test based hints:\n') if unittest_hints else ''
+        text = response['content'] + '\n\n### The function you wrote has successfully passed all unit tests, Congratulations!' if passed_tests else unit_test_feedback
     else: 
         adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
         session = requests.Session()  
         response = session.get(api_loc, params = params).json()
-        text = response['content']       
+        unit_test_feedback = reduce(lambda x,y: f'{x}\n{y}', unittest_hints,'## Test based hints:\n') if unittest_hints else ''
+        text = response['content'] + unit_test_feedback
     return text
     
     
