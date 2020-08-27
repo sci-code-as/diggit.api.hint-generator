@@ -85,10 +85,9 @@ def test_my_answer(filename=None,tests = ''):
             result = runner.run(suite)
             
             passed_tests = result.wasSuccessful()
-            failures = result.failures
-            
-            unittest_hints = [failure_log[1].split('{')[1] for failure_log in failures]
-            
+            failures = result.failures()
+            unittest_hints = [failure_log[-1].split('{')[1][0] for failure_log in failures]
+        
         except NameError: 
             print('Check the names...' )
             passed_tests= False
