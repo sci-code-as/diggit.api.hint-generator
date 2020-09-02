@@ -11,6 +11,7 @@ import sys
 from requests.packages.urllib3.util.retry import Retry
 from functools import reduce
 from contextlib import redirect_stderr #for testing 
+from collections import defaultdict
 import unittest
 from io import StringIO
 from unittest.mock import patch
@@ -53,6 +54,40 @@ def get_exercises():
     
 
 
+def syntax_check(answer, line_no):
+    # rudimentary syntax-checker with simple hints.
+    # have to isolate the line in the answer: 
+    answer_lines = answer.split('\n')
+    offending_line = answer_lines[line_no - 1]
+    # Doing a simple instantiation of the keywords
+    
+    loop_types = {"while", "for"}
+    syntax_keywords = defaultdict(str)
+    syntax_keywords.update({
+            'def' : f"- [on line: {line_no}] " +" When defining a function, check whether the line ends with '`:`'",
+            '_loop' : f"- [on line: {line_no}] " +" When you're writing a loop (`while` or `for`), check that the line ends with '`:`' ",
+            'input' : f"- [on line: {line_no}] " +" Looks like you're trying to call the built in function `input`, check that it is called as: \n```python\ninput('prompt text')\n```",
+            'print': f"- [on line: {line_no}] " +" When writing a `print`-statement, the thing you want to print should be called as: \n```python ```",
+            'in': f"- [on line: {line_no}] " +" When there is an `in` statement, the next element should be a list `[]`,tuple `()`, or a set `{}` of things. ",
+            'if': f"- [on line: {line_no}] " +" An if-statement should have a conditional (something that is `True` or `False`), and the line needs to end with a '`:`'.",
+            'else':f"- [on line: {line_no}] " +" The `else` block of an if-statement should look like `else:`. If you want another if-condition you should use '`elif <condition>:`'."            ,
+            #'lower': f"- [on line: {line_no}]" +"if you're trying to use `lower` on a string, make sure it is called as: \n```python\nstring.lower()\n```"
+            })
+    line_as_set = set(offending_line.split())
+    if loop_types.intersection(line_as_set):
+        line_as_set.update({'_loop'})
+    
+    syntax_feedback = reduce(lambda x,y: f'{x}\n{y}' if y else x,[syntax_keywords[el] for el in line_as_set], '')
+    
+    return syntax_feedback
+    
+    
+
+    
+
+
+
+
         
 def test_my_answer(filename=None,tests = ''):
     """
@@ -85,14 +120,17 @@ def test_my_answer(filename=None,tests = ''):
             result = runner.run(suite)
             
             passed_tests = result.wasSuccessful()
-            failures = result.failures()
+            failures = result.failures
             unittest_hints = [failure_log[-1].split('{')[1][0] for failure_log in failures]
         
         except NameError: 
-            print('Check the names...' )
+            #print('Check the names...' )
             passed_tests= False
+        except TypeError:
+            #print("A type-error occurred... check that you're calling functions as functions et.c.")
+            passed_tests = False
         except: 
-            print('something off with tests')
+            #print('something off with tests')
             passed_tests = False
     except SyntaxError:
         print(f'Your code has a syntax error that will not allow us to check it:\n') 
@@ -102,8 +140,9 @@ def test_my_answer(filename=None,tests = ''):
             print(f'{sys.exc_info()[1]}')
             err= sys.exc_info()[1]
             print(repr(err))
+            
             print("\nHint on reading Error-messages; \nif you get an EOF, then it is often the thing that was before what was printed that was the source of the error. This is because the Parser tries to continue and it only realizes it's encountered an error when it tries to read the next thing (This can include the end of the file as well).")
-        error = True
+        syntax_error = True
     except NameError:
         print(f'Your code stopped on an error due to undefined name:\n{sys.exc_info()[1]}')
         error = True
@@ -112,7 +151,15 @@ def test_my_answer(filename=None,tests = ''):
         error = True
        
     #session start here ?
-    if passed_tests or error: 
+    if syntax_error:
+        params['w_test'] = False
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+        session = requests.Session()  
+        response = session.get(api_loc, params = params).json()
+        
+        text = response['content'] + '\n## Syntax Error hints:\n These are suggestions to things you should check.\n' + syntax_check(answer,err.lineno)
+        
+    elif passed_tests or error: 
         params['w_test'] = False
         adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
         session = requests.Session()  
@@ -192,7 +239,7 @@ class REPL():
                 print(f'command not recognized, please use {self.commands.keys()}')
                 continue
             except NameError: 
-                print("Command Failed, exiting....")
+                #print("Command Failed, exiting....")
                 self.running = False
                 continue
             except IndexError:
