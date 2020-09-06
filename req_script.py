@@ -103,6 +103,7 @@ def test_my_answer(filename=None,tests = ''):
     params = {'name':filename,
               'answer': answer,
               'w_test':True}
+    syntax_error = False
     error = False
     unittest_hints = [] # worst case this now is an empty list
     try:
